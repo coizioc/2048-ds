@@ -1,8 +1,18 @@
-#include "../include/gameengine.hpp"
-#include "../include/state.hpp"
+#include "gameengine.hpp"
+#include "sprite_utils.hpp"
+#include "state.hpp"
+
+// GRIT auto-generated files
+#include "tile_nums.h"
+#include "tile_title.h"
 
 void GameEngine::init() {
     consoleDebugInit(DebugDevice_NOCASH);
+
+    oamInit(&oamSub, SpriteMapping_1D_256, false);
+    tile_title = oamAllocateGfx(&oamSub, SpriteSize_64x64, SpriteColorFormat_256Color);
+    dmaCopy(tile_titleTiles, tile_title, tile_titleTilesLen);
+    dmaCopy(tile_titlePal, SPRITE_PALETTE_SUB, tile_titlePalLen);
 
     int tileNumTextureID = 
     glLoadTileSet(tile_num_images,

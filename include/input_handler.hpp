@@ -19,6 +19,8 @@ public:
     InputHandler() {
         stylus_up = true;
     }
+
+    Vec2 touch_down();
     
 private:
     const Vec2 DEFAULT_TOUCH_POSITION = Vec2(-1, -1);
@@ -27,7 +29,7 @@ private:
     int released_keys;
     bool stylus_up;
     touchPosition _tp;
-    Vec2 touch_down;
+    Vec2 m_touch_down;
     Vec2 touch_up;
 };
 

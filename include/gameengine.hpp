@@ -7,9 +7,6 @@
 
 #include "input_handler.hpp"
 
-// GRIT auto-generated files
-#include "tile_nums.h"
-
 class State;
 
 class GameEngine {
@@ -28,6 +25,7 @@ public:
     InputHandler& inputHandler();
 
     glImage tile_num_images[32];
+    u16* tile_title;
 };
 
 #endif

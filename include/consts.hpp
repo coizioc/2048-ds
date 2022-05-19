@@ -5,6 +5,8 @@
 #define COLOR_GRID_EMPTY RGB15(25, 24, 22)
 #define COLOR_GRID_BG RGB15(23, 21, 20)
 
+#define TILE_TITLE_IDX 22
+#define TILE_PLAY_BUTTON_IDX 20
 
 struct Quadrant {
     enum Value {

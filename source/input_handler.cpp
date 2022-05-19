@@ -12,16 +12,16 @@ void InputHandler::update() {
 
     if (KEY_TOUCH & pressed_keys) {
         stylus_up = false;
-        touch_down = Vec2(_tp.px, _tp.py);
+        m_touch_down = Vec2(_tp.px, _tp.py);
 
-        fprintf(stderr, "touchdown point: %d %d\n", touch_down.x, touch_down.y);
+        fprintf(stderr, "touchdown point: %d %d\n", m_touch_down.x, m_touch_down.y);
 
         if (touch_up != DEFAULT_TOUCH_POSITION) {
             touch_up = DEFAULT_TOUCH_POSITION;
         }
     } else if(KEY_TOUCH & held_keys) {
         stylus_up = false;
-        if (touch_down != DEFAULT_TOUCH_POSITION) {
+        if (m_touch_down != DEFAULT_TOUCH_POSITION) {
             fprintf(stderr, "touchup point: %d %d\n", touch_up.x, touch_up.y);
             touch_up = Vec2(_tp.px, _tp.py);
         }
@@ -30,16 +30,20 @@ void InputHandler::update() {
     }
 }
 
+ Vec2 InputHandler::touch_down() {
+    return m_touch_down;
+}
+
 bool InputHandler::isSwipe() {
-    return touch_down != DEFAULT_TOUCH_POSITION && touch_up != DEFAULT_TOUCH_POSITION && stylus_up;
+    return m_touch_down != DEFAULT_TOUCH_POSITION && touch_up != DEFAULT_TOUCH_POSITION && stylus_up;
 }
 
 int InputHandler::getSwipe() {
-    Vec2 touch_vector = Vec2(touch_up.x - touch_down.x, -(touch_up.y - touch_down.y));
+    Vec2 touch_vector = Vec2(touch_up.x - m_touch_down.x, -(touch_up.y - m_touch_down.y));
 
     fprintf(stderr, "touch vector: %d %d\n", touch_vector.x, touch_vector.y);
 
-    touch_down = DEFAULT_TOUCH_POSITION;
+    m_touch_down = DEFAULT_TOUCH_POSITION;
     touch_up = DEFAULT_TOUCH_POSITION;
 
     fprintf(stderr, "magnitude: %.2f\n", f32tofloat(touch_vector.magnitude()));

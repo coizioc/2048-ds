@@ -4,9 +4,9 @@
 #include <nds.h>
 #include "../lib/gl2d.h"
 
-#include "../include/consts.hpp"
-#include "../include/animation.hpp"
-#include "../include/state_game.hpp"
+#include "consts.hpp"
+#include "animation.hpp"
+#include "state_game.hpp"
 
 GameState GameState::_state;
 
