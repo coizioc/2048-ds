@@ -10,14 +10,9 @@
 #include "consts.hpp"
 #include "gameengine.hpp"
 #include "state_menu.hpp"
-// #include "state_game.hpp"
-
-// GRIT auto-generated files
-#include "tile_nums.h"
 
 PrintConsole topScreen;
 PrintConsole bottomScreen;
-glImage tile_num_images[10];
 
 void initVideo() {
     TIMER0_CR = TIMER_ENABLE|TIMER_DIV_1024;
