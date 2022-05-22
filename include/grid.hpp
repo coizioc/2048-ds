@@ -5,32 +5,32 @@
 
 class Grid {   
 public:
-    static const size_t grid_size = 4;
-    static const size_t num_tiles = grid_size * grid_size;
+    static const size_t GRID_SIZE = 4;
+    static const size_t NUM_TILES = GRID_SIZE * GRID_SIZE;
 
     Grid() {
-        for(size_t i = 0; i < num_tiles; i++) {
-            this->cells[i] = 0;
+        for(size_t i = 0; i < NUM_TILES; i++) {
+            this->m_cells[i] = 0;
         }
     }
 
     Grid(const Grid& grid) {
-        for (size_t i = 0; i < num_tiles; i++) {
-            this->cells[i] = grid.cells[i];
+        for (size_t i = 0; i < NUM_TILES; i++) {
+            this->m_cells[i] = grid.m_cells[i];
         }
     }
 
     size_t randomAvailableCell() {
         size_t rand_idx;
         do {
-            rand_idx = rand() % num_tiles;
+            rand_idx = rand() % NUM_TILES;
         } while(cellOccupied(rand_idx));
 
         return rand_idx;
     }
 
     bool anyCellsAvailable() {
-        for (size_t i = 0; i < num_tiles; i++) {
+        for (size_t i = 0; i < NUM_TILES; i++) {
             if (cellEmpty(i)) {
                 return true;
             }
@@ -43,7 +43,7 @@ public:
     }
 
     bool cellEmpty(size_t idx) {
-        return this->cells[idx] == 0;
+        return this->m_cells[idx] == 0;
     }
 
     bool cellOccupied(size_t x, size_t y) {
@@ -59,7 +59,7 @@ public:
     }
 
     int getTile(size_t idx) {
-        return this->cells[idx];
+        return this->m_cells[idx];
     }
 
     void setTile(size_t x, size_t y, size_t value) {
@@ -67,7 +67,7 @@ public:
     }
 
     void setTile(size_t idx, size_t value) {
-        this->cells[idx] = value;
+        this->m_cells[idx] = value;
     }
 
     void removeTile(size_t x, size_t y) {
@@ -75,11 +75,11 @@ public:
     }
 
     void removeTile(size_t idx) {
-        this->cells[idx] = 0;
+        this->m_cells[idx] = 0;
     }
 
     bool withinBounds(size_t x, size_t y) {
-        return x >= 0 && x < grid_size && y >= 0 && y < grid_size;
+        return x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE;
     }
 
     int getSpriteIndexOfTileValue(size_t x, size_t y) {
@@ -100,10 +100,10 @@ public:
     }
 
 private:
-    int cells[num_tiles];
+    int m_cells[NUM_TILES];
 
     size_t flatten2DCoords(size_t x, size_t y) {
-        return grid_size * y + x;
+        return GRID_SIZE * y + x;
     }
 };
 

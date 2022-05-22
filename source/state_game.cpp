@@ -8,7 +8,7 @@
 #include "animation.hpp"
 #include "state_game.hpp"
 
-GameState GameState::_state;
+GameState GameState::s_state;
 
 void GameState::init(GameEngine* game) {
     addStartTiles();
@@ -60,14 +60,14 @@ void GameState::handleEvents(GameEngine* game) {
 
 void GameState::update(GameEngine* game) {
     int keys_pressed = keysDown();
-    if (game->inputHandler().isSwipe()) {
-        swipe_dir = game->inputHandler().getSwipe();
-        keys_pressed |= swipe_dir;
+    if (game->input_handler().isSwipe()) {
+        m_swipe_dir = game->input_handler().getSwipe();
+        keys_pressed |= m_swipe_dir;
     }
     if (keys_pressed & KEY_R) {
-        for (size_t i = 0; i < Grid::grid_size; i++) {
-            for (size_t j = 0; j < Grid::grid_size; j++) {
-                grid.setTile(i, j, grid.getTile(i, j) * 2);
+        for (size_t i = 0; i < Grid::GRID_SIZE; i++) {
+            for (size_t j = 0; j < Grid::GRID_SIZE; j++) {
+                m_grid.setTile(i, j, m_grid.getTile(i, j) * 2);
             }
         }
     }
@@ -77,7 +77,7 @@ void GameState::update(GameEngine* game) {
     bool moved = move(velocity);
     if (moved) {
         addRandomTile();
-        animation_offset = ANIMATION_FRAMES;
+        m_animation_offset = ANIMATION_FRAMES;
     }
 }
 
@@ -100,20 +100,20 @@ void GameState::addStartTiles() {
 }
 
 void GameState::addRandomTile() {
-    if (grid.anyCellsAvailable()) {
+    if (m_grid.anyCellsAvailable()) {
         int value = rand() % 10 < 9 ? 2 : 4;
 
-        int rand_idx = grid.randomAvailableCell();
+        int rand_idx = m_grid.randomAvailableCell();
 
-        grid.setTile(rand_idx, value);
+        m_grid.setTile(rand_idx, value);
     }
 }
 
 bool canMerge(Grid& grid, bool* blocked, int x1, int y1, int x2, int y2) {
     return grid.cellOccupied(x2, y2)
         && grid.getTile(x1, y1) == grid.getTile(x2, y2)
-        && !blocked[Grid::grid_size * y1 + x1]
-        && !blocked[Grid::grid_size * y2 + x2];
+        && !blocked[Grid::GRID_SIZE * y1 + x1]
+        && !blocked[Grid::GRID_SIZE * y2 + x2];
 }
 
 bool canShift(Grid& grid, int x1, int y1, int x2, int y2) {
@@ -121,8 +121,8 @@ bool canShift(Grid& grid, int x1, int y1, int x2, int y2) {
 }
 
 void GameState::resetMovesArray() {
-    for (size_t i = 0; i < Grid::num_tiles; i++) {
-        tile_transitions[i] = Vec2(0, 0);
+    for (size_t i = 0; i < Grid::NUM_TILES; i++) {
+        m_tile_transitions[i] = Vec2(0, 0);
     }
 }
 
@@ -132,19 +132,19 @@ bool GameState::move(Vec2 velocity) {
     }
 
     bool moved = false;
-    bool blocked[Grid::num_tiles] = { false };
+    bool blocked[Grid::NUM_TILES] = { false };
 
-    prev_grid = Grid(grid);
+    m_prev_grid = Grid(m_grid);
     resetMovesArray();
 
     // If vertical movement...
     if (velocity.x == 0) {
-        for (size_t i = 0; i < Grid::grid_size; i++) {
+        for (size_t i = 0; i < Grid::GRID_SIZE; i++) {
             size_t j = (velocity.y == -1) ? 1 : 2;
-            while (j >= 0 && j < Grid::grid_size) {
-                if (grid.cellOccupied(i, j)) {
+            while (j >= 0 && j < Grid::GRID_SIZE) {
+                if (m_grid.cellOccupied(i, j)) {
                     Vec2 movedBy = doMove(blocked, i, j, velocity);
-                    tile_transitions[Grid::grid_size * j + i] = movedBy;
+                    m_tile_transitions[Grid::GRID_SIZE * j + i] = movedBy;
                     moved |= movedBy != Vec2(0, 0);
                 }
                 j -= velocity.y;
@@ -152,12 +152,12 @@ bool GameState::move(Vec2 velocity) {
         }
     // If horizontal movement...
     } else {
-        for (size_t j = 0; j < Grid::grid_size; j++) {
+        for (size_t j = 0; j < Grid::GRID_SIZE; j++) {
             size_t i = (velocity.x == -1) ? 1 : 2;
-            while (i >= 0 && i < Grid::grid_size) {
-                if (grid.cellOccupied(i, j)) {
+            while (i >= 0 && i < Grid::GRID_SIZE) {
+                if (m_grid.cellOccupied(i, j)) {
                     Vec2 movedBy = doMove(blocked, i, j, velocity);
-                    tile_transitions[Grid::grid_size * j + i] = movedBy;
+                    m_tile_transitions[Grid::GRID_SIZE * j + i] = movedBy;
                     moved |= movedBy != Vec2(0, 0);
                 }
                 i -= velocity.x;
@@ -177,15 +177,15 @@ Vec2 GameState::doMove(bool* blocked, int x, int y, Vec2 velocity) {
     int new_x = x + dx;
     int new_y = y + dy;
 
-    if (canMerge(grid, blocked, x, y, new_x, new_y)) {
-        grid.removeTile(x, y);
-        grid.setTile(new_x, new_y, grid.getTile(new_x, new_y) * 2);
-        blocked[Grid::grid_size * new_y + new_x] = true;
+    if (canMerge(m_grid, blocked, x, y, new_x, new_y)) {
+        m_grid.removeTile(x, y);
+        m_grid.setTile(new_x, new_y, m_grid.getTile(new_x, new_y) * 2);
+        blocked[Grid::GRID_SIZE * new_y + new_x] = true;
         // score += grid.getTile(new_x, new_y);
         moved = true;
-    } else if (canShift(grid, x, y, new_x, new_y)) {
-        grid.setTile(new_x, new_y, grid.getTile(x, y));
-        grid.removeTile(x, y);
+    } else if (canShift(m_grid, x, y, new_x, new_y)) {
+        m_grid.setTile(new_x, new_y, m_grid.getTile(x, y));
+        m_grid.removeTile(x, y);
         moved = true;
     }
 
@@ -213,8 +213,8 @@ void GameState::drawGrid(GameEngine* game, int dy) {
 
     glBoxFilled(border_x, border_y, border_x + length, border_y + length, COLOR_GRID_BG);
     
-    for (size_t i = 0; i < Grid::grid_size; i++) {
-        for (size_t j = 0; j < Grid::grid_size; j++) {
+    for (size_t i = 0; i < Grid::GRID_SIZE; i++) {
+        for (size_t j = 0; j < Grid::GRID_SIZE; j++) {
             int x = border_x + border + (box_length + border) * i;
             int y = border_y + border + (box_length + border) * j;
 
@@ -223,31 +223,31 @@ void GameState::drawGrid(GameEngine* game, int dy) {
         }
     }
 
-    Grid grid_to_use = (animation_offset > 0) ? prev_grid : grid;
+    Grid grid_to_use = (m_animation_offset > 0) ? m_prev_grid : m_grid;
 
-    for (size_t i = 0; i < Grid::grid_size; i++) {
-        for (size_t j = 0; j < Grid::grid_size; j++) {
+    for (size_t i = 0; i < Grid::GRID_SIZE; i++) {
+        for (size_t j = 0; j < Grid::GRID_SIZE; j++) {
             if (grid_to_use.cellOccupied(i, j)) {
                 int x = border_x + border + (box_length + border) * i;
                 int y = border_y + border + (box_length + border) * j;
 
-                if (animation_offset > 0) {
-                    Vec2 velocity = tile_transitions[Grid::grid_size * j + i];
+                if (m_animation_offset > 0) {
+                    Vec2 velocity = m_tile_transitions[Grid::GRID_SIZE * j + i];
 
                     float distance_x = velocity.x * (border + box_length);
                     float distance_y = velocity.y * (border + box_length);
 
-                    int dx = (int)((float)(ANIMATION_FRAMES - animation_offset) / (float)ANIMATION_FRAMES * distance_x);
-                    int dy = (int)((float)(ANIMATION_FRAMES - animation_offset) / (float)ANIMATION_FRAMES * distance_y);
+                    int dx = (int)((float)(ANIMATION_FRAMES - m_animation_offset) / (float)ANIMATION_FRAMES * distance_x);
+                    int dy = (int)((float)(ANIMATION_FRAMES - m_animation_offset) / (float)ANIMATION_FRAMES * distance_y);
 
                     x += dx;
                     y += dy;
 
-                    animation_offset--;
+                    m_animation_offset--;
                 }
 
                 int tile_idx = grid_to_use.getSpriteIndexOfTileValue(i, j);
-                glSprite(x, y, GL_FLIP_NONE, game->tile_num_images + tile_idx);
+                glSprite(x, y, GL_FLIP_NONE, game->m_tile_num_images + tile_idx);
             }
         }
     }

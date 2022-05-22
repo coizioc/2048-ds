@@ -19,14 +19,14 @@ public:
 	void render(GameEngine* game);
 	
 	static MenuState* instance() {
-		return &_state;
+		return &s_state;
 	}
 
 protected:
 	MenuState() {}
 
 private:
-	static MenuState _state;
+	static MenuState s_state;
 };
 
 #endif

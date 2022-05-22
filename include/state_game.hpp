@@ -20,20 +20,20 @@ public:
 	void render(GameEngine* game);
 	
 	static GameState* instance() {
-		return &_state;
+		return &s_state;
 	}
 
 protected:
 	GameState() {}
 
 private:
-    int animation_offset;
-    int buttonsPressed;
-    int swipe_dir;
-    Grid grid;
-    Grid prev_grid;
-    Vec2 tile_transitions[Grid::num_tiles];
-	static GameState _state;
+    int m_animation_offset;
+    int m_buttons_pressed;
+    int m_swipe_dir;
+    Grid m_grid;
+    Grid m_prev_grid;
+    Vec2 m_tile_transitions[Grid::NUM_TILES];
+	static GameState s_state;
 
     void addStartTiles();
     void addRandomTile();

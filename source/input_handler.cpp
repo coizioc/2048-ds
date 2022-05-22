@@ -5,46 +5,46 @@
 void InputHandler::update() {
     scanKeys();
 
-    pressed_keys = keysDown();
-    held_keys = keysHeld();
-    released_keys = keysUp();
-    touchRead(&_tp);
+    m_pressed_keys = keysDown();
+    m_held_keys = keysHeld();
+    m_released_keys = keysUp();
+    touchRead(&m_tp);
 
-    if (KEY_TOUCH & pressed_keys) {
-        stylus_up = false;
-        m_touch_down = Vec2(_tp.px, _tp.py);
+    if (KEY_TOUCH & m_pressed_keys) {
+        m_stylus_up = false;
+        m_touch_down = Vec2(m_tp.px, m_tp.py);
 
         fprintf(stderr, "touchdown point: %d %d\n", m_touch_down.x, m_touch_down.y);
 
-        if (touch_up != DEFAULT_TOUCH_POSITION) {
-            touch_up = DEFAULT_TOUCH_POSITION;
+        if (m_touch_up != DEFAULT_TOUCH_POSITION) {
+            m_touch_up = DEFAULT_TOUCH_POSITION;
         }
-    } else if(KEY_TOUCH & held_keys) {
-        stylus_up = false;
+    } else if(KEY_TOUCH & m_held_keys) {
+        m_stylus_up = false;
         if (m_touch_down != DEFAULT_TOUCH_POSITION) {
-            fprintf(stderr, "touchup point: %d %d\n", touch_up.x, touch_up.y);
-            touch_up = Vec2(_tp.px, _tp.py);
+            fprintf(stderr, "touchup point: %d %d\n", m_touch_up.x, m_touch_up.y);
+            m_touch_up = Vec2(m_tp.px, m_tp.py);
         }
-    } else if (KEY_TOUCH & released_keys) {
-        stylus_up = true;
+    } else if (KEY_TOUCH & m_released_keys) {
+        m_stylus_up = true;
     }
 }
 
- Vec2 InputHandler::touch_down() {
+ Vec2 InputHandler::touch_down() const {
     return m_touch_down;
 }
 
 bool InputHandler::isSwipe() {
-    return m_touch_down != DEFAULT_TOUCH_POSITION && touch_up != DEFAULT_TOUCH_POSITION && stylus_up;
+    return m_touch_down != DEFAULT_TOUCH_POSITION && m_touch_up != DEFAULT_TOUCH_POSITION && m_stylus_up;
 }
 
 int InputHandler::getSwipe() {
-    Vec2 touch_vector = Vec2(touch_up.x - m_touch_down.x, -(touch_up.y - m_touch_down.y));
+    Vec2 touch_vector = Vec2(m_touch_up.x - m_touch_down.x, -(m_touch_up.y - m_touch_down.y));
 
     fprintf(stderr, "touch vector: %d %d\n", touch_vector.x, touch_vector.y);
 
     m_touch_down = DEFAULT_TOUCH_POSITION;
-    touch_up = DEFAULT_TOUCH_POSITION;
+    m_touch_up = DEFAULT_TOUCH_POSITION;
 
     fprintf(stderr, "magnitude: %.2f\n", f32tofloat(touch_vector.magnitude()));
 

@@ -11,7 +11,7 @@
 #include "state_menu.hpp"
 #include "vec2.hpp"
 
-MenuState MenuState::_state;
+MenuState MenuState::s_state;
 
 void MenuState::init(GameEngine* game) {
     const int y_offset = 150;
@@ -23,7 +23,7 @@ void MenuState::init(GameEngine* game) {
     for (std::vector<int>::iterator it = ease_out_frame_values.begin(); it != ease_out_frame_values.end(); it++) {
         int frame_value = *it;
 
-        oamSet(&oamSub, 0, x, title_y + frame_value, 0, 0, SpriteSize_64x64, SpriteColorFormat_256Color, game->tile_title, 0, false, false, false, false, false);
+        oamSet(&oamSub, 0, x, title_y + frame_value, 0, 0, SpriteSize_64x64, SpriteColorFormat_256Color, game->m_tile_title, 0, false, false, false, false, false);
 
         glBegin2D();
         glBoxFilled(0, 0, 255, 191, COLOR_BG);
@@ -42,7 +42,7 @@ void MenuState::init(GameEngine* game) {
         
         glBoxFilled(0, 0, 255, 191, COLOR_BG);
 
-        SpriteUtils::drawTwoByTwoTileSprite(game->tile_num_images + TILE_PLAY_BUTTON_IDX, x, play_y - frame_value, 32);
+        SpriteUtils::drawTwoByTwoTileSprite(game->m_tile_num_images + TILE_PLAY_BUTTON_IDX, x, play_y - frame_value, 32);
 
         glEnd2D();
         glFlush(0);
@@ -66,7 +66,7 @@ void MenuState::resume(GameEngine* game) {
 void MenuState::handleEvents(GameEngine* game) {
     int keys_pressed = keysDown();
     if (keys_pressed & KEY_TOUCH) {
-        Vec2 touch_down = game->inputHandler().touch_down();
+        Vec2 touch_down = game->input_handler().touch_down();
         if (touch_down.x >= 256 / 2 - 32 && touch_down.x <= 256 / 2 + 32 && touch_down.y >= 192 / 2 - 32 && touch_down.y <= 192 / 2 + 32) {
             game->pushState(GameState::instance());
         }

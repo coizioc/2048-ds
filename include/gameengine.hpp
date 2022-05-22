@@ -10,8 +10,8 @@
 class State;
 
 class GameEngine {
-    std::stack<State*> states;
-    InputHandler input_handler;
+    std::stack<State*> m_states;
+    InputHandler m_input_handler;
 public:
     void init();
     void changeState(State* game_state);
@@ -22,10 +22,10 @@ public:
     void update();
     void render();
 
-    InputHandler& inputHandler();
+    InputHandler& input_handler();
 
-    glImage tile_num_images[32];
-    u16* tile_title;
+    glImage m_tile_num_images[32];
+    u16* m_tile_title;
 };
 
 #endif
